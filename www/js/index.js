@@ -45,5 +45,38 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
-    }
-};
+    },
+showNurseDetails: function(nurse_id) {
+$.mobile.changePage($("#NurseDetails"));
+// We need to find the right entry in the nurse list, so iterate over
+// the nurse list until we find the provided ID, if we find a match set
+// nurse_to_show
+var nurse_to_show
+for (index = 0; index < app.nurse_data.length; ++index) {
+if ( app.nurse_data[index].id == nurse_id ) {
+nurse_to_show = app.nurse_data[index]
+}
+}
+if ( nurse_to_show != null ) {
+$("#NurseDetailsHeader").html(nurse_to_show.surname+", "+nurse_to_show.forename);
+$("#NurseDetailsContent").html("Grade "+nurse_to_show.grade);
+}
+},
+
+updateNurseList: function() {$.getJSON ("http://ianibbo.me/listNurses.json",
+function (data) {
+// Store the data we have loaded for later use.
+app.nurse_data=data;
+for (index = 0; index < data.length; ++index) {
+// Maybe you could subnavigate the specialisms
+// list here and add a "tag" for each specialism
+$("#NurseList").append ("<li "+
+"onClick=\"javascript:app.showNurseDetails('"+data[index].id+"');\">"+
+"<h3>"+ data[index].forename+", "+data[index].surname+"</h3><p>Grade"+data[index].grade+
+"</p></li>");
+}
+$("#NurseList").listview ("refresh");
+}
+);
+}
+}
